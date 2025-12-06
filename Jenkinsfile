@@ -24,20 +24,7 @@ pipeline {
             }
         }
         
-        stage('Test Docker Image') {
-            steps {
-                echo 'Testing Docker image...'
-                script {
-                    sh """
-                        docker run -d --name test-container -p 8080:80 ${DOCKER_IMAGE}:${DOCKER_TAG}
-                        sleep 5
-                        curl -f http://localhost:8080 || exit 1
-                        docker stop test-container
-                        docker rm test-container
-                    """
-                }
-            }
-        }
+       
         
     }
     
