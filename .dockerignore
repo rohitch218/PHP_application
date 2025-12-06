@@ -1,0 +1,9 @@
+.git
+.gitignore
+README.md
+Jenkinsfile
+.vscode
+.idea
+*.md
+.DS_Store
+
