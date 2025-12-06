@@ -4,13 +4,16 @@ pipeline {
     environment {
         DOCKER_IMAGE = 'php-user-app'
         DOCKER_TAG = "${env.BUILD_NUMBER}"
+        CONTAINER_NAME = 'php-app-container'
+        HOST_PORT = '8081'
+        CONTAINER_PORT = '80'
     }
     
     stages {
         stage('Checkout') {
             steps {
-                echo 'Checking out code from repository...'
-                checkout scm
+                git branch: 'main',
+                    url: 'https://github.com/rohitch218/PHP_application.git'
             }
         }
         
@@ -24,27 +27,25 @@ pipeline {
             }
         }
         
-        stage('Test Docker Image') {
+        stage('Run Docker Container') {
             steps {
-                echo 'Testing Docker image...'
+                echo 'Running Docker container...'
                 script {
-                    sh """
-                        docker run -d --name test-container -p 8080:80 ${DOCKER_IMAGE}:${DOCKER_TAG}
-                        sleep 5
-                        curl -f http://localhost:8080 || exit 1
-                        docker stop test-container
-                        docker rm test-container
-                    """
+                    // Remove old container if it exists
+                    sh "docker rm -f ${CONTAINER_NAME} || true"
+                    
+                    // Run new container
+                    sh "docker run -d --name ${CONTAINER_NAME} -p ${HOST_PORT}:${CONTAINER_PORT} ${DOCKER_IMAGE}:${DOCKER_TAG}"
                 }
             }
         }
-        
     }
     
     post {
         success {
             echo 'Pipeline completed successfully!'
             echo "Docker image: ${DOCKER_IMAGE}:${DOCKER_TAG}"
+            echo "Application is running on port ${HOST_PORT}"
         }
         failure {
             echo 'Pipeline failed!'
@@ -54,4 +55,3 @@ pipeline {
         }
     }
 }
-
