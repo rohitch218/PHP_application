@@ -7,10 +7,10 @@ pipeline {
     }
     
     stages {
-        stage('Checkout') {
+         stage('Checkout') {
             steps {
-                echo 'Checking out code from repository...'
-                checkout scm
+                git branch: 'main',
+                    url: 'https://github.com/rohitch218/PHP_application.git'
             }
         }
         
